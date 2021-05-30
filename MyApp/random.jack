@@ -1,0 +1,76 @@
+class random {
+
+    field int current;
+    field int times_called;
+    field int good_guss_x;
+    field int good_guss_y;
+
+    constructor random new(int seed) {
+        let current=random.abs(seed);
+        let good_guss_x=-1;
+        return this;
+        }
+
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    function int abs(int inp){
+        return Math.max(inp,-inp);
+        }
+
+    method void set_x(int x){
+        let good_guss_x=x;
+        return;
+        }
+
+    method void set_y(int y){
+        let good_guss_y=y;
+        return;
+        }
+
+    method int get_x(){
+        var int result;
+        let result = good_guss_x;
+        return result;
+        }
+
+    method int get_y(){
+        return good_guss_y;
+        }
+    method void increment_times_called(){
+        if (times_called<100){
+            let times_called=times_called+1;
+            }
+        if (times_called=100){
+            let current = random.abs(current+7);
+            let times_called=0;
+            }
+        return;
+        }
+
+    /* returns non negative pseudo random number up to the input "maximal" */
+    method int get_random(int maximal){
+        var int result;
+        let current = random.abs((13 * current ) + 7);
+        let result = current;
+        while (result>maximal){
+            let result = result - maximal;
+            }
+        do increment_times_called();
+        return result;
+        }
+
+    method int random_x(){
+        return get_random(9);
+        }
+
+    method int random_y(){
+        return get_random(9);
+        }
+    method int random_direction(){
+        return get_random(3);
+        }
+}

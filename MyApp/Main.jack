@@ -1,0 +1,61 @@
+/** Initializes a new battleship game and starts running it. */
+class Main {
+
+    function void main() {
+        var int seed;
+        var int difficulty_level;
+        var Array difficulty_seed;
+        var board player_board,enemy_board;
+        var start starter;
+        var random enemy;
+        var boolean is_player_turn,game_is_done;
+        var int turn_difficulty;
+
+        /* explain and get seed */
+        let starter = start.new();
+        let difficulty_seed = starter.get_started();
+        do starter.dispose();
+        let seed=difficulty_seed[1];
+        let difficulty_level=difficulty_seed[0];
+        do difficulty_seed.dispose();
+        /* set-up player ships */
+
+        let player_board = board.new(316,40,2);
+        do player_board.plot_board();
+        do player_board.place_vessels();
+        do player_board.clear_board();
+
+        /* set-up enemy */
+        let enemy_board = board.new(20,40,0);
+        do enemy_board.clear_board();
+        let enemy = random.new(seed);
+        do enemy_board.auto_place_vessels(enemy);
+        do enemy_board.clear_board();
+
+        /* play each turn until done */
+        let game_is_done=false;
+        let is_player_turn=true;
+        while (~game_is_done){
+            let turn_difficulty=enemy.get_random(9);
+            if (is_player_turn){
+                do enemy_board.user_guess_tile();
+                if (enemy_board.game_is_over()){
+                    do Output.printString("Well done, you are a great admiral!");
+                    let game_is_done=true;
+                    }
+                }
+
+            if (~is_player_turn){
+                if (turn_difficulty=difficulty_level){do player_board.computer_cheater(enemy);}
+                if (turn_difficulty>difficulty_level){do player_board.computer_guess_tile(enemy);}
+                if (turn_difficulty<difficulty_level){do player_board.computer_cheater(enemy);}
+                if (player_board.game_is_over()){
+                    do Output.printString("This time all your vessels have drowned, better luck next time!");
+                    let game_is_done=true;
+                    }
+                }
+            let is_player_turn=~is_player_turn;
+            }
+        return;
+        }
+    }

@@ -1,0 +1,55 @@
+class start {
+
+    field int seed;
+
+    constructor start new() {
+    let seed=0;
+    return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method Array get_started(){
+        var int input;
+        var Array level_and_seed;
+        do Output.printString("Welcome to our fleet, Commander-in-Chief!");
+        do Output.println();
+        do Output.println();
+        do Output.printString("a cruiser of length 4,");
+        do Output.println();
+        do Output.printString("two ships of length 3,");
+        do Output.println();
+        do Output.printString("and a submarine of length 2 must be placed.");
+        do Output.println();
+        do Output.printString("Select a position for each vessel from big to small.");
+        do Output.println();
+        do Output.printString("Move the cursor by the arrows and press space to place.");
+        do Output.println();
+        do Output.printString("Tap the letter c to cancel a vessel that has not been laid to the end.");
+        do Output.println();
+        do Output.printString("Vessels are vertical or horizontal and must not touch each other");
+        do Output.println();
+         do Output.printString("To choose the level of the enemy, choose a number between");
+        do Output.println();
+        do Output.printString("0 (super easy, barely an inconvenience) and 9 (Horatio Nelson came back)");
+        do Output.println();
+        do Output.printString("An aircraft carrier of length 5,");
+        do Output.printString("Good luck");
+
+        let input = Keyboard.keyPressed();
+        while ((input<47)|(input>57)){
+            let seed = seed +1;
+            let input = Keyboard.keyPressed();
+            }
+        let level_and_seed=Array.new(2);
+        let level_and_seed[0]=input-47;
+        let level_and_seed[1]=seed;
+        do Screen.clearScreen();
+        return level_and_seed;
+    }
+}
+
+

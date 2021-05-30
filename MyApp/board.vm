@@ -1,0 +1,5193 @@
+function board.new 0
+push constant 6
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push constant 0
+pop this 2
+push constant 0
+pop this 3
+push pointer 0
+push constant 100
+push argument 2
+call board.set_array_size_value 3
+pop this 4
+push constant 17
+pop this 5
+push pointer 0
+return
+function board.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function board.get_ship_status_at_x_y 1
+push argument 0
+pop pointer 0
+push argument 1
+push constant 10
+call Math.multiply 2
+push argument 2
+add
+pop local 0
+push local 0
+push this 4
+add
+pop pointer 1
+push that 0
+pop local 0
+push local 0
+return
+function board.set_ship_status_at_x_y 1
+push argument 0
+pop pointer 0
+push argument 1
+push constant 10
+call Math.multiply 2
+push argument 2
+add
+pop local 0
+push local 0
+push this 4
+add
+push argument 3
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push pointer 0
+push argument 1
+push argument 2
+call board.draw_bord_at_location 3
+pop temp 0
+push constant 0
+return
+function board.draw_bord_at_location 2
+push argument 0
+pop pointer 0
+push pointer 0
+push argument 1
+push argument 2
+call board.get_ship_status_at_x_y 3
+pop local 0
+push pointer 0
+push argument 1
+push constant 16
+call Math.multiply 2
+push argument 2
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 1
+push local 0
+push constant 3
+neg
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 1
+call board.draw_unknown 1
+pop temp 0
+label IF_FALSE0
+push local 0
+push constant 1
+neg
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 1
+call board.draw_x 1
+pop temp 0
+label IF_FALSE1
+push local 0
+push constant 0
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 1
+call board.draw_unknown 1
+pop temp 0
+label IF_FALSE2
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 1
+call board.draw_unknown 1
+pop temp 0
+label IF_FALSE3
+push local 0
+push constant 2
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 1
+call board.draw_empty 1
+pop temp 0
+label IF_FALSE4
+push local 0
+push constant 3
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 1
+call board.draw_full 1
+pop temp 0
+label IF_FALSE5
+push local 0
+push constant 4
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push local 1
+call board.draw_hit 1
+pop temp 0
+label IF_FALSE6
+push local 0
+push constant 5
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push local 1
+call board.draw_empty_shot 1
+pop temp 0
+label IF_FALSE7
+push constant 0
+return
+function board.move_cursor 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.draw_cursor 1
+pop temp 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 0
+eq
+not
+if-goto WHILE_END0
+call Keyboard.keyPressed 0
+pop local 0
+push local 0
+push constant 130
+eq
+push this 2
+push constant 0
+gt
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+call board.draw_bord_at_location 3
+pop temp 0
+push pointer 0
+call board.move_cursor_left 1
+pop temp 0
+push pointer 0
+call board.draw_cursor 1
+pop temp 0
+label IF_FALSE0
+push local 0
+push constant 131
+eq
+push this 3
+push constant 0
+gt
+and
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push this 2
+push this 3
+call board.draw_bord_at_location 3
+pop temp 0
+push pointer 0
+call board.move_cursor_up 1
+pop temp 0
+push pointer 0
+call board.draw_cursor 1
+pop temp 0
+label IF_FALSE1
+push local 0
+push constant 132
+eq
+push this 2
+push constant 9
+lt
+and
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push this 2
+push this 3
+call board.draw_bord_at_location 3
+pop temp 0
+push pointer 0
+call board.move_cursor_right 1
+pop temp 0
+push pointer 0
+call board.draw_cursor 1
+pop temp 0
+label IF_FALSE2
+push local 0
+push constant 133
+eq
+push this 3
+push constant 9
+lt
+and
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+push this 2
+push this 3
+call board.draw_bord_at_location 3
+pop temp 0
+push pointer 0
+call board.move_cursor_down 1
+pop temp 0
+push pointer 0
+call board.draw_cursor 1
+pop temp 0
+label IF_FALSE3
+goto WHILE_EXP0
+label WHILE_END0
+push constant 1000
+call Sys.wait 1
+pop temp 0
+push local 0
+return
+function board.print_tiles 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 100
+lt
+not
+if-goto WHILE_END0
+push local 0
+push this 4
+add
+pop pointer 1
+push that 0
+call Output.printInt 1
+pop temp 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function board.tile_was_not_shot 1
+push argument 0
+pop pointer 0
+push pointer 0
+push argument 1
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 4
+lt
+pop local 0
+push local 0
+return
+function board.shot_at 1
+push argument 0
+pop pointer 0
+push pointer 0
+push argument 1
+push argument 2
+call board.get_ship_status_at_x_y 3
+pop local 0
+push local 0
+push constant 3
+eq
+push local 0
+push constant 1
+eq
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+push constant 4
+call board.set_ship_status_at_x_y 4
+pop temp 0
+push constant 4
+pop local 0
+push this 5
+push constant 1
+sub
+pop this 5
+label IF_FALSE0
+push local 0
+push constant 4
+lt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push argument 1
+push argument 2
+push constant 5
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE1
+push pointer 0
+push argument 1
+push argument 2
+call board.draw_bord_at_location 3
+pop temp 0
+push constant 0
+return
+function board.game_is_over 1
+push argument 0
+pop pointer 0
+push this 5
+push constant 0
+eq
+pop local 0
+push local 0
+return
+function board.user_guess_tile 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+not
+not
+if-goto WHILE_END0
+push pointer 0
+call board.move_cursor 1
+pop local 0
+push local 0
+push constant 32
+eq
+push pointer 0
+push this 2
+push this 3
+call board.tile_was_not_shot 3
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+call board.shot_at 3
+pop temp 0
+push constant 0
+not
+pop local 1
+label IF_FALSE0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function board.computer_guess_tile 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 2
+label WHILE_EXP0
+push local 2
+not
+not
+if-goto WHILE_END0
+push argument 1
+call random.random_x 1
+pop local 0
+push argument 1
+call random.random_y 1
+pop local 1
+push pointer 0
+push local 0
+push local 1
+call board.tile_was_not_shot 3
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push local 0
+push local 1
+call board.shot_at 3
+pop temp 0
+push constant 0
+not
+pop local 2
+label IF_FALSE0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function board.empty_same_direction 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 1
+push this 3
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 4
+lt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 3
+push constant 1
+add
+pop this 3
+push pointer 0
+call board.find_direction 1
+pop local 0
+push local 0
+call Output.printInt 1
+pop temp 0
+push argument 1
+push constant 0
+eq
+push local 0
+push argument 1
+eq
+or
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push argument 2
+push this 2
+call random.set_x 2
+pop temp 0
+push argument 2
+push this 3
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 1
+label IF_FALSE2
+push local 1
+not
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 3
+push constant 1
+sub
+pop this 3
+label IF_FALSE3
+label IF_FALSE1
+label IF_FALSE0
+push this 3
+push constant 9
+lt
+push local 1
+not
+and
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push this 2
+push this 3
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 4
+lt
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push this 3
+push constant 1
+sub
+pop this 3
+push pointer 0
+call board.find_direction 1
+pop local 0
+push local 0
+call Output.printInt 1
+pop temp 0
+push argument 1
+push constant 0
+eq
+push local 0
+push argument 1
+eq
+or
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push argument 2
+push this 2
+call random.set_x 2
+pop temp 0
+push argument 2
+push this 3
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 1
+label IF_FALSE6
+push local 1
+not
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 3
+call String.new 1
+push constant 119
+call String.appendChar 2
+push constant 116
+call String.appendChar 2
+push constant 102
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+push this 3
+push constant 1
+add
+pop this 3
+label IF_FALSE7
+label IF_FALSE5
+label IF_FALSE4
+push this 2
+push constant 9
+lt
+push local 1
+not
+and
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 4
+lt
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push this 2
+push constant 1
+sub
+pop this 2
+push pointer 0
+call board.find_direction 1
+pop local 0
+push local 0
+call Output.printInt 1
+pop temp 0
+push argument 1
+push constant 0
+eq
+push local 0
+push argument 1
+eq
+or
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push argument 2
+push this 2
+call random.set_x 2
+pop temp 0
+push argument 2
+push this 3
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 1
+label IF_FALSE10
+push local 1
+not
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push this 2
+push constant 1
+add
+pop this 2
+label IF_FALSE11
+label IF_FALSE9
+label IF_FALSE8
+push this 2
+push constant 0
+gt
+push local 1
+not
+and
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 4
+lt
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push this 2
+push constant 1
+add
+pop this 2
+push pointer 0
+call board.find_direction 1
+pop local 0
+push local 0
+call Output.printInt 1
+pop temp 0
+push argument 1
+push constant 0
+eq
+push local 0
+push argument 1
+eq
+or
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push argument 2
+push this 2
+call random.set_x 2
+pop temp 0
+push argument 2
+push this 3
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 1
+label IF_FALSE14
+push local 1
+not
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push this 2
+push constant 1
+sub
+pop this 2
+label IF_FALSE15
+label IF_FALSE13
+label IF_FALSE12
+push local 1
+return
+function board.computer_smart_guess 5
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push constant 10
+lt
+push local 0
+not
+and
+not
+if-goto WHILE_END0
+push constant 0
+pop local 2
+label WHILE_EXP1
+push local 2
+push constant 10
+lt
+push local 0
+not
+and
+not
+if-goto WHILE_END1
+push pointer 0
+push local 1
+push local 2
+call board.get_ship_status_at_x_y 3
+pop local 3
+push local 3
+push constant 4
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call board.find_open_direction 1
+pop local 4
+push local 4
+call Output.printInt 1
+pop temp 0
+push constant 1
+call String.new 1
+push constant 32
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+push pointer 0
+push local 4
+push argument 1
+call board.empty_same_direction 3
+pop local 0
+push constant 1
+call String.new 1
+push constant 104
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+push local 0
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 2
+call String.new 1
+push constant 32
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+push local 1
+call Output.printInt 1
+pop temp 0
+push local 2
+call Output.printInt 1
+pop temp 0
+push argument 1
+call random.get_x 1
+pop local 1
+push argument 1
+call random.get_y 1
+pop local 2
+push constant 2
+call String.new 1
+push constant 32
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+push local 1
+call Output.printInt 1
+pop temp 0
+push local 2
+call Output.printInt 1
+pop temp 0
+push pointer 0
+push local 1
+push local 2
+call board.shot_at 3
+pop temp 0
+label IF_FALSE1
+label IF_FALSE0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP1
+label WHILE_END1
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+not
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push argument 1
+call board.computer_guess_tile 2
+pop temp 0
+label IF_FALSE2
+push constant 0
+return
+function board.computer_cheater 4
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push argument 1
+call random.random_x 1
+pop local 1
+push local 1
+push constant 8
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push constant 10
+lt
+push local 0
+not
+and
+not
+if-goto WHILE_END0
+push constant 0
+pop local 2
+label WHILE_EXP1
+push local 2
+push constant 10
+lt
+push local 0
+not
+and
+not
+if-goto WHILE_END1
+push pointer 0
+push local 1
+push local 2
+call board.get_ship_status_at_x_y 3
+pop local 3
+push local 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push local 1
+push local 2
+call board.shot_at 3
+pop temp 0
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP1
+label WHILE_END1
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+label IF_FALSE0
+push local 0
+not
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push argument 1
+call board.computer_guess_tile 2
+pop temp 0
+label IF_FALSE2
+push argument 1
+push constant 1
+neg
+call random.set_x 2
+pop temp 0
+push constant 0
+return
+function board.clear_board 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 10
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 1
+label WHILE_EXP1
+push local 1
+push constant 10
+lt
+not
+if-goto WHILE_END1
+push pointer 0
+push local 0
+push local 1
+call board.get_ship_status_at_x_y 3
+pop local 2
+push local 2
+push constant 1
+neg
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 2
+pop local 2
+label IF_FALSE0
+push local 2
+push constant 3
+neg
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+pop local 2
+label IF_FALSE1
+push pointer 0
+push local 0
+push local 1
+push local 2
+call board.set_ship_status_at_x_y 4
+pop temp 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP1
+label WHILE_END1
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push pointer 0
+call board.plot_board 1
+pop temp 0
+push constant 0
+return
+function board.hit_ship_left_or_right 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push argument 1
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push argument 1
+push constant 9
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+not
+pop local 0
+label IF_FALSE3
+label IF_FALSE2
+push local 0
+return
+function board.hit_ship_up_or_down 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push argument 2
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push argument 2
+push constant 9
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+not
+pop local 0
+label IF_FALSE3
+label IF_FALSE2
+push local 0
+return
+function board.is_valid_guess 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 1
+push argument 2
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 1
+push constant 1
+add
+pop local 1
+label IF_FALSE1
+label IF_FALSE0
+push argument 2
+push constant 9
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 1
+push constant 1
+add
+pop local 1
+label IF_FALSE3
+label IF_FALSE2
+push argument 1
+push constant 0
+gt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 1
+push constant 1
+add
+pop local 1
+label IF_FALSE5
+label IF_FALSE4
+push argument 1
+push constant 9
+lt
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push local 1
+push constant 1
+add
+pop local 1
+label IF_FALSE7
+label IF_FALSE6
+push local 1
+push constant 2
+lt
+push pointer 0
+push argument 1
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 4
+lt
+and
+pop local 0
+push local 0
+return
+function board.find_unknown_near 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push argument 2
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+sub
+call board.is_valid_guess 3
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push argument 3
+push argument 1
+call random.set_x 2
+pop temp 0
+push argument 3
+push argument 2
+push constant 1
+sub
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push argument 2
+push constant 9
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+add
+call board.is_valid_guess 3
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push argument 3
+push argument 1
+call random.set_x 2
+pop temp 0
+push argument 3
+push argument 2
+push constant 1
+add
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 0
+label IF_FALSE3
+label IF_FALSE2
+push argument 1
+push constant 0
+gt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+call board.is_valid_guess 3
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push argument 3
+push argument 1
+push constant 1
+sub
+call random.set_x 2
+pop temp 0
+push argument 3
+push argument 2
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 0
+label IF_FALSE5
+label IF_FALSE4
+push argument 1
+push constant 9
+lt
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+call board.is_valid_guess 3
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push argument 3
+push argument 1
+push constant 1
+add
+call random.set_x 2
+pop temp 0
+push argument 3
+push argument 2
+call random.set_y 2
+pop temp 0
+push constant 0
+not
+pop local 0
+label IF_FALSE7
+label IF_FALSE6
+push local 0
+return
+function board.array_of_ships_lengths 1
+push constant 5
+call Array.new 1
+pop local 0
+push constant 0
+push local 0
+add
+push constant 5
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+push local 0
+add
+push constant 4
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 2
+push local 0
+add
+push constant 3
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 3
+push local 0
+add
+push constant 3
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 4
+push local 0
+add
+push constant 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+return
+function board.place_vessels 3
+push argument 0
+pop pointer 0
+call board.array_of_ships_lengths 0
+pop local 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push constant 5
+lt
+not
+if-goto WHILE_END0
+push local 1
+push local 0
+add
+pop pointer 1
+push that 0
+pop local 2
+push pointer 0
+push local 2
+call board.place_player_vessel 2
+pop temp 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function board.ship_above_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 3
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.open_ship_above_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 3
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 4
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.ship_under_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 3
+push constant 9
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.open_ship_under_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 3
+push constant 9
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 4
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.near_vessel_vertical 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.ship_above_cursor 1
+push pointer 0
+call board.ship_under_cursor 1
+or
+pop local 0
+push local 0
+return
+function board.near_open_vessel_vertical 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.open_ship_above_cursor 1
+push pointer 0
+call board.open_ship_under_cursor 1
+or
+pop local 0
+push local 0
+return
+function board.ship_left_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 2
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.open_ship_left_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 2
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 4
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.ship_right_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 2
+push constant 9
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.open_ship_right_cursor 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 2
+push constant 9
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 4
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+not
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push local 0
+return
+function board.near_open_vessel_horizontal 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.open_ship_left_cursor 1
+push pointer 0
+call board.open_ship_right_cursor 1
+or
+pop local 0
+push local 0
+return
+function board.near_vessel_horizontal 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.ship_left_cursor 1
+push pointer 0
+call board.ship_right_cursor 1
+or
+pop local 0
+push local 0
+return
+function board.can_place_square_at_cursor 2
+push argument 0
+pop pointer 0
+push constant 0
+not
+pop local 0
+push pointer 0
+push this 2
+push this 3
+call board.get_ship_status_at_x_y 3
+pop local 1
+push local 1
+push constant 2
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+pop local 0
+label IF_FALSE0
+push argument 2
+push constant 0
+gt
+push pointer 0
+call board.near_vessel_horizontal 1
+push pointer 0
+call board.near_vessel_vertical 1
+or
+not
+and
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+pop local 0
+label IF_FALSE1
+push argument 1
+push constant 1
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+call board.near_vessel_horizontal 1
+push constant 0
+not
+eq
+not
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+pop local 0
+label IF_FALSE3
+label IF_FALSE2
+push argument 1
+push constant 2
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+call board.near_vessel_vertical 1
+push constant 0
+not
+eq
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 0
+pop local 0
+label IF_FALSE5
+label IF_FALSE4
+push local 0
+return
+function board.block_vertical_neighbors 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+sub
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE0
+push this 3
+push constant 9
+lt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+add
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE1
+push constant 0
+return
+function board.block_horizontal_neighbors 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 0
+gt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE0
+push this 2
+push constant 9
+lt
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE1
+push constant 0
+return
+function board.update_neighbors 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.find_direction 1
+pop local 0
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+call board.block_vertical_neighbors 3
+pop temp 0
+label IF_FALSE0
+push local 0
+push constant 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push argument 1
+push argument 2
+call board.block_horizontal_neighbors 3
+pop temp 0
+label IF_FALSE1
+push constant 0
+return
+function board.place_square 0
+push argument 0
+pop pointer 0
+push pointer 0
+push this 2
+push this 3
+push constant 3
+call board.set_ship_status_at_x_y 4
+pop temp 0
+push pointer 0
+push this 2
+push this 3
+call board.update_neighbors 3
+pop temp 0
+push constant 0
+return
+function board.find_direction 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push pointer 0
+call board.near_vessel_horizontal 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 1
+pop local 0
+label IF_FALSE0
+push pointer 0
+call board.near_vessel_vertical 1
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 2
+pop local 0
+label IF_FALSE1
+push local 0
+return
+function board.find_open_direction 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push pointer 0
+call board.near_open_vessel_horizontal 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 1
+pop local 0
+label IF_FALSE0
+push pointer 0
+call board.near_open_vessel_vertical 1
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 2
+pop local 0
+label IF_FALSE1
+push local 0
+return
+function board.adjacent_full_tile_direction 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push this 3
+push constant 9
+lt
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 1
+pop local 0
+label IF_FALSE1
+label IF_FALSE0
+push this 2
+push constant 9
+lt
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 3
+pop local 0
+label IF_FALSE3
+label IF_FALSE2
+push this 2
+push constant 0
+gt
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 2
+pop local 0
+label IF_FALSE5
+label IF_FALSE4
+push local 0
+return
+function board.update_previous_neighbors 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.adjacent_full_tile_direction 1
+pop local 0
+push local 0
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+sub
+call board.update_neighbors 3
+pop temp 0
+label IF_FALSE0
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push this 2
+push this 3
+push constant 1
+add
+call board.update_neighbors 3
+pop temp 0
+label IF_FALSE1
+push local 0
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+call board.update_neighbors 3
+pop temp 0
+label IF_FALSE2
+push local 0
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+call board.update_neighbors 3
+pop temp 0
+label IF_FALSE3
+push constant 0
+return
+function board.update_current_previous_neighbors 1
+push argument 0
+pop pointer 0
+push pointer 0
+call board.find_direction 1
+pop local 0
+push pointer 0
+push this 2
+push this 3
+call board.update_neighbors 3
+pop temp 0
+push pointer 0
+call board.update_previous_neighbors 1
+pop temp 0
+push constant 0
+return
+function board.update_edge 4
+push argument 0
+pop pointer 0
+push this 3
+push constant 0
+gt
+pop local 0
+push this 3
+push constant 9
+lt
+pop local 1
+push this 2
+push constant 0
+gt
+pop local 2
+push this 2
+push constant 9
+lt
+pop local 3
+push local 0
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 2
+push this 3
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push this 2
+push this 3
+push constant 1
+sub
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE1
+label IF_FALSE0
+push local 1
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push this 2
+push this 3
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+push this 2
+push this 3
+push constant 1
+add
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE3
+label IF_FALSE2
+push local 2
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE5
+label IF_FALSE4
+push local 3
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE7
+label IF_FALSE6
+push local 0
+push local 3
+and
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+push constant 1
+sub
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE9
+label IF_FALSE8
+push local 0
+push local 2
+and
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+push constant 1
+sub
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE11
+label IF_FALSE10
+push local 1
+push local 2
+and
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push pointer 0
+push this 2
+push constant 1
+sub
+push this 3
+push constant 1
+add
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE13
+label IF_FALSE12
+push local 1
+push local 3
+and
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 2
+eq
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push pointer 0
+push this 2
+push constant 1
+add
+push this 3
+push constant 1
+add
+push constant 1
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE15
+label IF_FALSE14
+push constant 0
+return
+function board.place_player_vessel 6
+push argument 0
+pop pointer 0
+push this 4
+push constant 100
+call copy.copy_array 2
+pop local 0
+push constant 0
+pop local 1
+push constant 0
+pop local 3
+label WHILE_EXP0
+push local 1
+push argument 1
+lt
+not
+if-goto WHILE_END0
+push pointer 0
+call board.move_cursor 1
+pop local 2
+push local 2
+push constant 32
+eq
+push pointer 0
+push local 3
+push local 1
+call board.can_place_square_at_cursor 3
+and
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call board.place_square 1
+pop temp 0
+push local 1
+push constant 1
+add
+pop local 1
+push local 1
+push constant 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+call board.find_direction 1
+pop local 3
+push pointer 0
+call board.update_current_previous_neighbors 1
+pop temp 0
+label IF_FALSE1
+label IF_FALSE0
+push local 2
+push constant 67
+eq
+push local 2
+push constant 99
+eq
+or
+push local 1
+push constant 0
+gt
+and
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 0
+push constant 100
+call copy.copy_array 2
+pop this 4
+push pointer 0
+call board.plot_board 1
+pop temp 0
+push constant 0
+pop local 1
+push constant 0
+pop local 3
+label IF_FALSE2
+goto WHILE_EXP0
+label WHILE_END0
+push pointer 0
+push this 2
+push this 3
+call board.close_all_edges 3
+pop temp 0
+push constant 0
+return
+function board.close_all_edges 0
+push argument 0
+pop pointer 0
+push constant 0
+pop this 2
+label WHILE_EXP0
+push this 2
+push constant 10
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop this 3
+label WHILE_EXP1
+push this 3
+push constant 10
+lt
+not
+if-goto WHILE_END1
+push pointer 0
+push this 2
+push this 3
+call board.get_ship_status_at_x_y 3
+push constant 3
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call board.update_edge 1
+pop temp 0
+label IF_FALSE0
+push this 3
+push constant 1
+add
+pop this 3
+goto WHILE_EXP1
+label WHILE_END1
+push this 2
+push constant 1
+add
+pop this 2
+goto WHILE_EXP0
+label WHILE_END0
+push argument 1
+pop this 2
+push argument 2
+pop this 3
+push constant 0
+return
+function board.move_cursor_up 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 1
+sub
+pop this 3
+push constant 0
+return
+function board.move_cursor_down 0
+push argument 0
+pop pointer 0
+push this 3
+push constant 1
+add
+pop this 3
+push constant 0
+return
+function board.move_cursor_right 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 1
+add
+pop this 2
+push constant 0
+return
+function board.move_cursor_left 0
+push argument 0
+pop pointer 0
+push this 2
+push constant 1
+sub
+pop this 2
+push constant 0
+return
+function board.set_array_size_value 2
+push argument 0
+pop pointer 0
+push argument 1
+call Array.new 1
+pop local 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push argument 1
+lt
+not
+if-goto WHILE_END0
+push local 1
+push local 0
+add
+push argument 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return
+function board.auto_place_vessels 7
+push argument 0
+pop pointer 0
+call board.array_of_ships_lengths 0
+pop local 6
+push constant 0
+pop local 4
+push constant 0
+push constant 0
+call Output.moveCursor 2
+pop temp 0
+label WHILE_EXP0
+push local 4
+push constant 5
+lt
+not
+if-goto WHILE_END0
+push local 4
+push local 6
+add
+pop pointer 1
+push that 0
+pop local 5
+push constant 0
+pop local 0
+label WHILE_EXP1
+push local 0
+not
+not
+if-goto WHILE_END1
+push argument 1
+call random.random_x 1
+pop local 1
+push argument 1
+call random.random_y 1
+pop local 2
+push argument 1
+call random.random_direction 1
+pop local 3
+push pointer 0
+push local 1
+push local 2
+push local 3
+push local 5
+call board.auto_place_vessel 5
+pop local 0
+goto WHILE_EXP1
+label WHILE_END1
+push local 4
+push constant 1
+add
+pop local 4
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function board.auto_place_vessel 1
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push pointer 0
+push argument 1
+push argument 2
+push argument 3
+push argument 4
+call board.can_place_vessel 5
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+push argument 3
+push argument 4
+call board.place_vessel 5
+pop temp 0
+push constant 0
+not
+pop local 0
+label IF_FALSE0
+push local 0
+return
+function board.place_vessel 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push argument 1
+pop local 1
+push argument 2
+pop local 2
+label WHILE_EXP0
+push local 0
+push argument 4
+lt
+not
+if-goto WHILE_END0
+push pointer 0
+push local 1
+push local 2
+call board.computer_place_at 3
+pop temp 0
+push argument 3
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 2
+push constant 1
+sub
+pop local 2
+label IF_FALSE0
+push argument 3
+push constant 1
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 2
+push constant 1
+add
+pop local 2
+label IF_FALSE1
+push argument 3
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 1
+push constant 1
+sub
+pop local 1
+label IF_FALSE2
+push argument 3
+push constant 3
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push local 1
+push constant 1
+add
+pop local 1
+label IF_FALSE3
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function board.computer_place_at 0
+push argument 0
+pop pointer 0
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+call board.set_ship_status_at_x_y 4
+pop temp 0
+push pointer 0
+push argument 1
+push argument 2
+call board.computer_update_edge 3
+pop temp 0
+push constant 0
+return
+function board.computer_update_edge 4
+push argument 0
+pop pointer 0
+push argument 2
+push constant 0
+gt
+pop local 0
+push argument 2
+push constant 9
+lt
+pop local 1
+push argument 1
+push constant 0
+gt
+pop local 2
+push argument 1
+push constant 9
+lt
+pop local 3
+push local 0
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+sub
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE1
+label IF_FALSE0
+push local 1
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+push argument 1
+push argument 2
+push constant 1
+add
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE3
+label IF_FALSE2
+push local 2
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE5
+label IF_FALSE4
+push local 3
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE7
+label IF_FALSE6
+push local 0
+push local 3
+and
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+sub
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE9
+label IF_FALSE8
+push local 0
+push local 2
+and
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+sub
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+sub
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE11
+label IF_FALSE10
+push local 1
+push local 2
+and
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
+push pointer 0
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+add
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE13
+label IF_FALSE12
+push local 1
+push local 3
+and
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+add
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
+push pointer 0
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+add
+push constant 3
+neg
+call board.set_ship_status_at_x_y 4
+pop temp 0
+label IF_FALSE15
+label IF_FALSE14
+push constant 0
+return
+function board.can_place_vessel 4
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push constant 0
+not
+pop local 3
+push argument 1
+pop local 1
+push argument 2
+pop local 2
+label WHILE_EXP0
+push local 3
+push local 0
+push argument 4
+lt
+and
+not
+if-goto WHILE_END0
+push pointer 0
+push local 1
+push local 2
+call board.get_ship_status_at_x_y 3
+push constant 0
+eq
+pop local 3
+push argument 3
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 2
+push constant 1
+sub
+pop local 2
+push local 2
+call board.valid_half_coordinate 1
+not
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+pop local 3
+label IF_FALSE1
+label IF_FALSE0
+push argument 3
+push constant 1
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push local 2
+push constant 1
+add
+pop local 2
+push local 2
+call board.valid_half_coordinate 1
+not
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+pop local 3
+label IF_FALSE3
+label IF_FALSE2
+push argument 3
+push constant 2
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push local 1
+push constant 1
+sub
+pop local 1
+push local 1
+call board.valid_half_coordinate 1
+not
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 0
+pop local 3
+label IF_FALSE5
+label IF_FALSE4
+push argument 3
+push constant 3
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push local 1
+push constant 1
+add
+pop local 1
+push local 1
+call board.valid_half_coordinate 1
+not
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 0
+pop local 3
+label IF_FALSE7
+label IF_FALSE6
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push local 3
+return
+function board.valid_half_coordinate 1
+push argument 0
+push constant 1
+neg
+gt
+push argument 0
+push constant 11
+lt
+and
+pop local 0
+push local 0
+return
+function board.plot_board 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push constant 10
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 1
+label WHILE_EXP1
+push local 1
+push constant 10
+lt
+not
+if-goto WHILE_END1
+push pointer 0
+push local 0
+push local 1
+call board.draw_bord_at_location 3
+pop temp 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP1
+label WHILE_END1
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push pointer 0
+call board.plot_frame 1
+pop temp 0
+push constant 0
+return
+function board.draw_unknown 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 224
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 496
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 1016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 1816
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 1544
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 1536
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 1536
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 1536
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 1920
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 960
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 192
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 192
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 192
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 192
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_x 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 8185
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 14364
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 7224
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 3696
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 960
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 960
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 3696
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 7224
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 14364
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 8185
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_empty 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 32767
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_hit 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 4081
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 8185
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 14365
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 28687
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 28687
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 14365
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 8185
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 4081
+neg
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_empty_shot 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 14364
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 8185
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 16381
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 8185
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 14364
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_full 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 1
+neg
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_0 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 14364
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 12300
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 28686
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 12300
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 14364
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_1 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 448
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 480
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 384
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 992
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 992
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_2 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 7224
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 14364
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 14348
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 14336
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 7168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 3584
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 1792
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 960
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 448
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 224
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_3 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 4064
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 7168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 14336
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 14336
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 6144
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 4064
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 4064
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 8160
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 6144
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 14336
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 14336
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 7168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 8160
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_4 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 3072
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 3584
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 3840
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 3456
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 3264
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 3168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 3184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 3120
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 16376
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 16376
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 3072
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 3072
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 3072
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 16320
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 16320
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_5 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 24
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 120
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 504
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 896
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 1536
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 3072
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 6144
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 6144
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 3072
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 1536
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 1800
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 1016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 240
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_6 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 240
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 248
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 28
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 12
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 12
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 12
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 12
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 1020
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 1020
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 780
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 780
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 780
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 780
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 1020
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 1020
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_7 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 16380
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 12288
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 14336
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 7168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 3584
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 1792
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 896
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 448
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 224
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 112
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 56
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 24
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_8 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 6168
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 8184
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_9 1
+push constant 16384
+push argument 0
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 16320
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 16320
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 12480
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 12480
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 12480
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 12480
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 16320
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 16320
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 12288
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 12288
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 12288
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 12288
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 14336
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 7936
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 3840
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.draw_cursor 1
+push argument 0
+pop pointer 0
+push constant 16384
+push pointer 0
+push this 2
+push constant 16
+call Math.multiply 2
+push this 3
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+add
+pop local 0
+push local 0
+push constant 0
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 32
+add
+push constant 8580
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 64
+add
+push constant 29070
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 96
+add
+push constant 14748
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 128
+add
+push constant 7608
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 160
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 192
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 224
+add
+push constant 32766
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 256
+add
+push constant 32766
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 288
+add
+push constant 2016
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 320
+add
+push constant 4080
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 352
+add
+push constant 7608
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 384
+add
+push constant 14748
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 416
+add
+push constant 29070
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 448
+add
+push constant 8580
+call Memory.poke 2
+pop temp 0
+push local 0
+push constant 480
+add
+push constant 0
+call Memory.poke 2
+pop temp 0
+push constant 0
+return
+function board.xy_to_draw_location 1
+push argument 0
+pop pointer 0
+push constant 32
+push this 1
+push argument 2
+add
+call Math.multiply 2
+push this 0
+push argument 1
+add
+push constant 16
+call Math.divide 2
+add
+pop local 0
+push local 0
+return
+function board.plot_frame 1
+push argument 0
+pop pointer 0
+push pointer 0
+push constant 0
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_0 1
+pop temp 0
+push pointer 0
+push constant 1
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_1 1
+pop temp 0
+push pointer 0
+push constant 2
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_2 1
+pop temp 0
+push pointer 0
+push constant 3
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_3 1
+pop temp 0
+push pointer 0
+push constant 4
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_4 1
+pop temp 0
+push pointer 0
+push constant 5
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_5 1
+pop temp 0
+push pointer 0
+push constant 6
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_6 1
+pop temp 0
+push pointer 0
+push constant 7
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_7 1
+pop temp 0
+push pointer 0
+push constant 8
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_8 1
+pop temp 0
+push pointer 0
+push constant 9
+push constant 16
+call Math.multiply 2
+push constant 17
+neg
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_9 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 0
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_0 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 1
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_1 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 2
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_2 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 3
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_3 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 4
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_4 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 5
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_5 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 6
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_6 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 7
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_7 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 8
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_8 1
+pop temp 0
+push pointer 0
+push constant 17
+neg
+push constant 9
+push constant 16
+call Math.multiply 2
+call board.xy_to_draw_location 3
+pop local 0
+push local 0
+call board.draw_9 1
+pop temp 0
+push constant 0
+return

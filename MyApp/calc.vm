@@ -1,0 +1,17 @@
+function calc.new 0
+push constant 1
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push pointer 0
+return
+function calc.add 1
+push argument 0
+pop pointer 0
+push argument 1
+push this 0
+add
+pop local 0
+push local 0
+return

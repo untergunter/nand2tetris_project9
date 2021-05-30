@@ -1,0 +1,1409 @@
+// board
+// 1. actual 10 array rows of 10 array rows public
+// 3. add ship from-to - adds the ships on actual public
+// 4. guess(index,index) - takes a  public
+// 5. plot()
+
+class board {
+
+    field int base_x, base_y,cursor_x,cursor_y; // screen location of the board top-left corner
+    field Array tiles; // data holder for the board 10*10
+    field int ship_tiles_left;
+
+    constructor board new(int x, int y,int board_start) {
+        let base_x = x;
+        let base_y = y;
+        let cursor_x = 0;
+        let cursor_y = 0;
+        let tiles = set_array_size_value(100,board_start);
+        let ship_tiles_left = 17;
+        return this;
+        }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method int get_ship_status_at_x_y(int row_index,int column_index){
+    var int result;
+    let result = (row_index*10)+column_index;
+    let result = tiles[result];
+    return result;
+    }
+
+    method void set_ship_status_at_x_y (int row_index,int column_index,int status) {
+    var int location;
+    let location = (row_index*10)+column_index;
+    let tiles[location]=status;
+    do draw_bord_at_location(row_index,column_index);
+    return;
+    }
+
+    method void draw_bord_at_location(int row_index,int column_index){
+    var int content,location;
+    /* content meaning: */
+    /* -3=blocked closed, 0= empty closed,1= vessel closed*/
+    /* -1=blocked open, 2= empty open,3= vessel open */
+    let content = get_ship_status_at_x_y(row_index,column_index);
+    let location = xy_to_draw_location(row_index*16,column_index*16);
+    if (content=-3) {do board.draw_unknown(location);}
+    //{do board.draw_x(location);}
+    if (content=-1) {do board.draw_x(location);}
+    if (content=0)  {do board.draw_unknown(location);}
+    // {do board.draw_empty(location);}
+    if (content=1)  {do board.draw_unknown(location);}
+    // {do board.draw_full(location);}
+    if (content=2)  {do board.draw_empty(location);}
+    if (content=3)  {do board.draw_full(location);}
+    if (content=4)  {do board.draw_hit(location);}
+    if (content=5)  {do board.draw_empty_shot(location);}
+    return;
+    }
+
+
+    method int move_cursor(){
+        var int input;
+        do draw_cursor();
+        let input=0;
+        while (input=0){
+            let input = Keyboard.keyPressed();
+            /* left = 130,up=131,right=132,down=133,32 space,128 enter(???)*/
+
+            if ((input = 130)&(cursor_x>0)) {
+                do draw_bord_at_location(cursor_x,cursor_y);
+                do move_cursor_left();
+                do draw_cursor();
+                }
+
+            if ((input = 131)&(cursor_y>0)) {
+                do draw_bord_at_location(cursor_x,cursor_y);
+                do move_cursor_up();
+                do draw_cursor();
+                }
+
+            if ((input = 132)&(cursor_x<9)) {
+                do draw_bord_at_location(cursor_x,cursor_y);
+                do move_cursor_right();
+                do draw_cursor();
+                }
+
+            if ((input = 133)&(cursor_y<9)) {
+                do draw_bord_at_location(cursor_x,cursor_y);
+                do move_cursor_down();
+                do draw_cursor();
+                }
+
+            }
+        do Sys.wait(1000);
+        return input;
+    }
+
+    method void print_tiles(){
+        var int index,value;
+        let index=0;
+        while (index<100){
+            do Output.printInt(tiles[index]);
+            }
+        return;
+        }
+
+    method boolean tile_was_not_shot(int x,int y){
+        var boolean is_close;
+        let is_close = get_ship_status_at_x_y(x,y)<4;
+        return is_close;
+        }
+
+    method void shot_at(int x,int y){
+        var int current_on_tile;
+        let current_on_tile=get_ship_status_at_x_y(x,y);
+
+        if ((current_on_tile=3)|(current_on_tile=1)){
+            do set_ship_status_at_x_y(x,y,4);
+            let current_on_tile=4;
+            let ship_tiles_left=ship_tiles_left-1;
+            }
+
+        if (current_on_tile<4){
+            do set_ship_status_at_x_y(x,y,5);
+            }
+        do draw_bord_at_location(x,y);
+        return;
+        }
+
+    method boolean game_is_over(){
+        var boolean is_over;
+        let is_over = ship_tiles_left=0;
+        return is_over;
+        }
+
+    method void user_guess_tile(){
+        var int user_input;
+        var boolean valid_guess;
+        let user_input=0;
+        let valid_guess=false;
+        while (~valid_guess){
+            let user_input=move_cursor();
+            if ((user_input=32)&
+                (tile_was_not_shot(cursor_x,cursor_y))){
+                do shot_at(cursor_x,cursor_y);
+                let valid_guess=true;
+                }
+            }
+        return;
+        }
+
+    method void computer_guess_tile(random guesser){
+        var int x,y;
+        var boolean done_guessing;
+        let done_guessing=false;
+        while (~done_guessing){
+            let x=guesser.random_x();
+            let y=guesser.random_y();
+            if (tile_was_not_shot(x,y)){
+                do shot_at(x,y);
+                let done_guessing=true;
+                }
+            }
+        return;
+        }
+
+    method boolean empty_same_direction(int direction,random guesser){
+        var int other_direction;
+        var boolean found;
+        let found=false;
+
+        if (cursor_y>0){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y+1)<4){
+                let cursor_y=cursor_y+1;
+                let other_direction=find_direction();
+                do Output.printInt(other_direction);
+                if ((direction=0)|(other_direction=direction)){
+                    do guesser.set_x(cursor_x);
+                    do guesser.set_y(cursor_y);
+                    let found=true;}
+                if (~found){
+                    let cursor_y=cursor_y-1;
+                    }
+                }
+            }
+
+        if ((cursor_y<9)&(~found)){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y-1)<4){
+                let cursor_y=cursor_y-1;
+                let other_direction=find_direction();
+                do Output.printInt(other_direction);
+                if ((direction=0)|(other_direction=direction)){
+                    do guesser.set_x(cursor_x);
+                    do guesser.set_y(cursor_y);
+                    let found=true;}
+                if (~found){
+                    do Output.printString("wtf");
+                    let cursor_y=cursor_y+1;
+                    }
+                }
+            }
+
+        if ((cursor_x<9)&(~found)){
+            if (get_ship_status_at_x_y(cursor_x-1,cursor_y)<4){
+                let cursor_x=cursor_x-1;
+                let other_direction=find_direction();
+                do Output.printInt(other_direction);
+                if ((direction=0)|(other_direction=direction)){
+                    do guesser.set_x(cursor_x);
+                    do guesser.set_y(cursor_y);
+                    let found=true;}
+                if(~found){
+                    let cursor_x=cursor_x+1;
+                    }
+                }
+            }
+
+        if ((cursor_x>0)&(~found)){
+            if (get_ship_status_at_x_y(cursor_x+1,cursor_y)<4){
+                let cursor_x=cursor_x+1;
+                let other_direction=find_direction();
+                do Output.printInt(other_direction);
+                if ((direction=0)|(other_direction=direction)){
+                    do guesser.set_x(cursor_x);
+                    do guesser.set_y(cursor_y);
+                    let found=true;}
+                if (~found){
+                    let cursor_x=cursor_x-1;
+                    }
+                }
+            }
+        return found;
+        }
+
+    method void computer_smart_guess(random guesser){
+        var boolean found_calculated;
+        var int cursor_x,cursor_y,tile_value,direction;
+        let found_calculated=false;
+        let cursor_x=0;
+        while ((cursor_x<10)&(~found_calculated)){
+            let cursor_y=0;
+            while ((cursor_y<10)&(~found_calculated)){
+                let tile_value=get_ship_status_at_x_y(cursor_x,cursor_y);
+                if (tile_value=4){
+                        let direction=find_open_direction();
+                        do Output.printInt(direction);
+                        do Output.printString(" ");
+                        let found_calculated = empty_same_direction(direction,guesser);
+                        do Output.printString("h");
+                        if (found_calculated){
+                            do Output.printString("  ");
+                            do Output.printInt(cursor_x);
+                            do Output.printInt(cursor_y);
+                            let cursor_x=guesser.get_x();
+                            let cursor_y=guesser.get_y();
+                            do Output.printString("  ");
+                            do Output.printInt(cursor_x);
+                            do Output.printInt(cursor_y);
+                            do shot_at(cursor_x,cursor_y);
+                            }
+                        }
+                let cursor_y=cursor_y+1;
+                }
+            let cursor_x=cursor_x+1;}
+
+        if (~found_calculated) {
+            do computer_guess_tile(guesser);
+            }
+        return;
+        }
+
+    method void computer_cheater(random guesser){
+        var boolean found_calculated;
+        var int x,y,tile_value;
+        let found_calculated=false;
+        let x = guesser.random_x();
+        if (x <8){
+            let x=0;
+            while ((x<10)&(~found_calculated)){
+                let y=0;
+                while ((y<10)&(~found_calculated)){
+                    let tile_value=get_ship_status_at_x_y(x,y);
+                    if (tile_value=3){
+                        do shot_at(x,y);
+                        let found_calculated=true;
+                        }
+                    let y=y+1;
+                    }
+                let x=x+1;}
+                }
+        if (~found_calculated) {
+            do computer_guess_tile(guesser);
+            }
+        do guesser.set_x(-1);
+        return;
+        }
+
+    method void clear_board(){
+        var int x,y,value;
+        let x=0;
+        while (x<10){
+            let y=0;
+            while (y<10){
+                let value=get_ship_status_at_x_y(x,y);
+                if (value=-1){let value=2;}
+                if (value=-3){let value=0;}
+                do set_ship_status_at_x_y(x,y,value);
+                let y=y+1;
+                }
+            let x=x+1;
+            }
+        do plot_board();
+        return;
+        }
+
+    method boolean hit_ship_left_or_right(int x,int y){
+        var boolean result;
+        let result=false;
+
+        if (x>0){
+            if (get_ship_status_at_x_y(x-1,y)=3){
+                let result=true;
+                }
+            }
+
+        if (x<9){
+            if (get_ship_status_at_x_y(x+1,y)=3){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean hit_ship_up_or_down(int x,int y){
+    var boolean result;
+    let result=false;
+
+    if (y>0){
+        if (get_ship_status_at_x_y(x,y-1)=3){
+            let result=true;
+            }
+        }
+
+    if (y<9){
+        if (get_ship_status_at_x_y(x,y+1)=3){
+            let result=true;
+            }
+        }
+    return result;
+    }
+
+    method boolean is_valid_guess(int x,int y){
+    var boolean valid;
+    var int found_around;
+    let found_around=0;
+    if (y>0){
+        if (get_ship_status_at_x_y(x,y-1)=3){let found_around=found_around+1;}}
+    if (y<9){
+        if (get_ship_status_at_x_y(x,y+1)=3){let found_around=found_around+1;}}
+    if (x>0){
+        if (get_ship_status_at_x_y(x-1,y)=3){let found_around=found_around+1;}}
+    if (x<9){
+        if (get_ship_status_at_x_y(x+1,y)=3){let found_around=found_around+1;}}
+    let valid = (found_around<2)&(get_ship_status_at_x_y(x,y)<4);
+    return valid;
+    }
+
+    method boolean find_unknown_near(int x,int y,random guesser){
+    var boolean found;
+    let found=false;
+
+    if (y>0){
+        if (is_valid_guess(x,y-1)){
+            do guesser.set_x(x);
+            do guesser.set_y(y-1);
+            let found=true;
+            }
+        }
+
+    if (y<9){
+        if (is_valid_guess(x,y+1)){
+            do guesser.set_x(x);
+            do guesser.set_y(y+1);
+            let found=true;
+            }
+        }
+
+    if (x>0){
+        if (is_valid_guess(x-1,y)){
+            do guesser.set_x(x-1);
+            do guesser.set_y(y);
+            let found=true;
+            }
+        }
+
+    if (x<9){
+        if (is_valid_guess(x+1,y)){
+            do guesser.set_x(x+1);
+            do guesser.set_y(y);
+            let found=true;
+            }
+        }
+    return found;
+    }
+
+    function Array array_of_ships_lengths(){
+    var Array ship_sizes;
+    let ship_sizes=Array.new(5);
+    let ship_sizes[0]=5;
+    let ship_sizes[1]=4;
+    let ship_sizes[2]=3;
+    let ship_sizes[3]=3;
+    let ship_sizes[4]=2;
+    return ship_sizes;
+    }
+
+    method void place_vessels(){
+    var Array ship_sizes;
+    var int current_ship_index,current_ship_size;
+    let ship_sizes=board.array_of_ships_lengths();
+    let current_ship_index=0;
+    while (current_ship_index<5){
+        let current_ship_size=ship_sizes[current_ship_index];
+        do place_player_vessel(current_ship_size);
+        let current_ship_index=current_ship_index+1;
+        }
+    return;
+    }
+    
+    method boolean ship_above_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_y>0){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y-1)=3){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean open_ship_above_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_y>0){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y-1)=4){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean ship_under_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_y<9){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y+1)=3){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean open_ship_under_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_y<9){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y+1)=4){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean near_vessel_vertical(){
+        var boolean result;
+        let result = ship_above_cursor()|ship_under_cursor();
+        return result;
+        }
+
+    method boolean near_open_vessel_vertical(){
+        var boolean result;
+        let result = open_ship_above_cursor()|open_ship_under_cursor();
+        return result;
+        }
+
+    method boolean ship_left_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_x>0){
+            if (get_ship_status_at_x_y(cursor_x-1,cursor_y)=3){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean open_ship_left_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_x>0){
+            if (get_ship_status_at_x_y(cursor_x-1,cursor_y)=4){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean ship_right_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_x<9){
+            if (get_ship_status_at_x_y(cursor_x+1,cursor_y)=3){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean open_ship_right_cursor(){
+        var boolean result;
+        let result=false;
+        if (cursor_x<9){
+            if (get_ship_status_at_x_y(cursor_x+1,cursor_y)=4){
+                let result=true;
+                }
+            }
+        return result;
+        }
+
+    method boolean near_open_vessel_horizontal(){
+        var boolean result;
+        let result = open_ship_left_cursor()|open_ship_right_cursor();
+        return result;
+        }
+
+    method boolean near_vessel_horizontal(){
+        var boolean result;
+        let result = ship_left_cursor()|ship_right_cursor();
+        return result;
+        }
+
+    method boolean can_place_square_at_cursor(int direction_to_vessel,int current_vessel_length){
+        // direction_to_vessel 0 - no direction,1- vertical,2 - horizontal
+        var boolean result;
+        var int value_at_square;
+        let result=true;
+        let value_at_square = get_ship_status_at_x_y(cursor_x,cursor_y);
+        if (~(value_at_square=2)){
+            let result=false;
+            }
+
+        if ((current_vessel_length>0)&
+            (~(near_vessel_horizontal()|near_vessel_vertical()))){
+            let result=false;
+            }
+
+        if (direction_to_vessel=1){
+            if (~(near_vessel_horizontal()=true)){
+                let result=false;
+                }
+            }
+
+        if (direction_to_vessel=2){
+            if (~(near_vessel_vertical()=true)){
+                let result=false;
+                }
+            }
+        return result;
+        }
+
+    method void block_vertical_neighbors(int x,int y){
+        if (cursor_y>0){do set_ship_status_at_x_y(x,y-1,-1);}
+        if (cursor_y<9){do set_ship_status_at_x_y(x,y+1,-1);}
+        return;
+        }
+
+    method void block_horizontal_neighbors(int x,int y){
+        if (cursor_x>0){do set_ship_status_at_x_y(x-1,y,-1);}
+        if (cursor_x<9){do set_ship_status_at_x_y(x+1,y,-1);}
+        return;
+        }
+
+    method void update_neighbors(int x,int y){
+        var int direction;
+        let direction=find_direction();
+        if (direction=1){do block_vertical_neighbors(x,y);}
+        if (direction=2){do block_horizontal_neighbors(x,y);}
+        return;
+        }
+
+    method void place_square(){
+        do set_ship_status_at_x_y(cursor_x,cursor_y,3);
+        do update_neighbors(cursor_x,cursor_y);
+        return;
+        }
+
+    method int find_direction(){
+        var int result;
+        let result=0;
+        if (near_vessel_horizontal()){let result=1;}
+        if (near_vessel_vertical()){let result=2;}
+        return result;
+        }
+
+    method int find_open_direction(){
+        var int result;
+        let result=0;
+        if (near_open_vessel_horizontal()){let result=1;}
+        if (near_open_vessel_vertical()){let result=2;}
+        return result;
+        }
+
+    method find adjacent_full_tile_direction(){
+        // 0 up 1 down 2 left 3 right
+        var int direction;
+        let direction=0;
+
+        // check down
+        if (cursor_y<9){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y+1)=3){
+                let direction=1;
+                }
+            }
+
+        // check right
+        if (cursor_x<9){
+            if (get_ship_status_at_x_y(cursor_x+1,cursor_y)=3){
+                let direction=3;
+                }
+            }
+
+        // check left
+        if (cursor_x>0){
+            if (get_ship_status_at_x_y(cursor_x-1,cursor_y)=3){
+                let direction=2;
+                }
+            }
+        return direction;
+        }
+
+    method void update_previous_neighbors(){
+        var int direction_to_first;
+        let direction_to_first=adjacent_full_tile_direction();
+        // 0 up 1 down 2 left 3 right
+        if (direction_to_first=0){do update_neighbors(cursor_x,cursor_y-1);}
+        if (direction_to_first=1){do update_neighbors(cursor_x,cursor_y+1);}
+        if (direction_to_first=2){do update_neighbors(cursor_x-1,cursor_y);}
+        if (direction_to_first=3){do update_neighbors(cursor_x+1,cursor_y);}
+        return;
+        }
+
+    method void update_current_previous_neighbors(){
+        var int direction;
+        let direction=find_direction();
+        do update_neighbors(cursor_x,cursor_y);
+        do update_previous_neighbors();
+        return;
+        }
+
+    method void update_edge(){
+        var boolean up,down,left,right;
+        let up = cursor_y>0;
+        let down = cursor_y<9;
+        let left = cursor_x>0;
+        let right = cursor_x<9;
+
+        // set single step
+        if (up){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y-1)=2){
+                do set_ship_status_at_x_y(cursor_x,cursor_y-1,-1);
+                }
+            }
+
+        if (down){
+            if (get_ship_status_at_x_y(cursor_x,cursor_y+1)=2){
+                do set_ship_status_at_x_y(cursor_x,cursor_y+1,-1);
+                }
+            }
+
+        if (left){
+            if (get_ship_status_at_x_y(cursor_x-1,cursor_y)=2){
+                do set_ship_status_at_x_y(cursor_x-1,cursor_y,-1);
+                }
+            }
+
+        if (right){
+            if (get_ship_status_at_x_y(cursor_x+1,cursor_y)=2){
+                do set_ship_status_at_x_y(cursor_x+1,cursor_y,-1);
+                }
+            }
+
+        if (up&right){
+            if (get_ship_status_at_x_y(cursor_x+1,cursor_y-1)=2){
+                do set_ship_status_at_x_y(cursor_x+1,cursor_y-1,-1);
+                }
+            }
+
+        if (up&left){
+            if (get_ship_status_at_x_y(cursor_x-1,cursor_y-1)=2){
+                do set_ship_status_at_x_y(cursor_x-1,cursor_y-1,-1);
+                }
+            }
+
+        if (down&left){
+            if (get_ship_status_at_x_y(cursor_x-1,cursor_y+1)=2){
+                do set_ship_status_at_x_y(cursor_x-1,cursor_y+1,-1);
+                }
+            }
+
+        if (down&right){
+            if (get_ship_status_at_x_y(cursor_x+1,cursor_y+1)=2){
+                do set_ship_status_at_x_y(cursor_x+1,cursor_y+1,-1);
+                }
+            }
+
+        return;
+        }
+
+    method void place_player_vessel(int length){
+        var Array last_board;
+        var int current_length,keyboard_input,direction,first_x,first_y;
+        let last_board = copy.copy_array(tiles,100);
+        let current_length=0;
+        let direction=0;
+        while (current_length<length){
+            let keyboard_input = move_cursor();
+            if ((keyboard_input=32)&(can_place_square_at_cursor(direction,current_length))){
+                do place_square(); /* sets index neighbors and plots */
+                let current_length = current_length+1;
+                if (current_length=2){
+                        let direction=find_direction();
+                        do update_current_previous_neighbors();
+                        }
+                }
+
+            if (((keyboard_input=67)|(keyboard_input=99))&(current_length>0)){
+                let tiles = copy.copy_array(last_board,100);
+                do plot_board();
+                let current_length = 0;
+                let direction=0;
+                }
+
+            }
+        do close_all_edges(cursor_x,cursor_y);
+        return;
+        }
+
+    method void close_all_edges(int user_x,int user_y){
+        let cursor_x=0;
+        while (cursor_x<10){
+            let cursor_y=0;
+            while(cursor_y<10){
+                if (get_ship_status_at_x_y(cursor_x,cursor_y)=3){
+                    do update_edge();
+                    }
+                let cursor_y=cursor_y+1;
+                }
+            let cursor_x=cursor_x+1;
+            }
+        let cursor_x=user_x;
+        let cursor_y=user_y;
+        return;
+        }
+
+    method void move_cursor_up(){
+    let cursor_y = cursor_y - 1;
+    return;
+    }
+
+    method void move_cursor_down(){
+    let cursor_y = cursor_y + 1;
+    return;
+    }
+
+    method void move_cursor_right(){
+    let cursor_x = cursor_x+1;
+    return;
+    }
+
+    method void move_cursor_left(){
+    let cursor_x = cursor_x-1;
+    return;
+    }
+
+    method Array set_array_size_value(int size,int val) {
+    /* 10*10 in a 1d array*/
+    var Array heap;
+    var int i;
+    let heap = Array.new(size);
+    let i = 0;
+    while (i<size) {
+            let heap[i] = val;
+            let i = i +1;
+        }
+    return heap;
+    }
+
+    method void auto_place_vessels(random guesser) {
+    var boolean placed;
+    var in x,y,direction,current_index,current_ship_size;
+    var Array ship_sizes;
+    let ship_sizes=board.array_of_ships_lengths();
+    let current_index=0;
+    do Output.moveCursor(0,0);
+    while (current_index<5){
+        let current_ship_size=ship_sizes[current_index];
+        let placed = false;
+        while (~placed){
+            let x = guesser.random_x();
+            let y = guesser.random_y();
+            let direction = guesser.random_direction();
+            let placed = auto_place_vessel(x,y,direction,current_ship_size);
+            }
+        let current_index=current_index+1;
+        }
+    return;
+    }
+
+    method boolean auto_place_vessel(int x,int y,int direction,int ship_size){
+        var boolean got_placed;
+        let got_placed=false;
+        if (can_place_vessel(x,y,direction,ship_size)){
+            do place_vessel(x,y,direction,ship_size);
+            let got_placed=true;
+            }
+        return got_placed;
+    }
+
+    method void place_vessel(int xin,int yin,int direction,int length){
+        var int index,x,y;
+        let index=0;
+        let x=xin;
+        let y=yin;
+        while (index<length){
+            do computer_place_at(x,y);
+
+            if (direction = 0){
+                let y=y-1;
+                }
+
+            if (direction = 1){
+                let y=y+1;
+                }
+
+            if (direction = 2){
+                let x=x-1;
+                }
+
+            if (direction = 3){
+                let x=x+1;
+                }
+            let index=index+1;
+            }
+        return;
+        }
+
+    method void computer_place_at(int x,int y){
+        do set_ship_status_at_x_y(x,y,1);
+        do computer_update_edge(x,y);
+        return;
+        }
+
+    method void computer_update_edge(int x,int y){
+        var boolean up,down,left,right;
+        let up = y>0;
+        let down = y<9;
+        let left = x>0;
+        let right = x<9;
+
+        // set single step
+        if (up){
+            if (get_ship_status_at_x_y(x,y-1)=0){
+                do set_ship_status_at_x_y(x,y-1,-3);
+                }
+            }
+
+        if (down){
+            if (get_ship_status_at_x_y(x,y+1)=0){
+                do set_ship_status_at_x_y(x,y+1,-3);
+                }
+            }
+
+        if (left){
+            if (get_ship_status_at_x_y(x-1,y)=0){
+                do set_ship_status_at_x_y(x-1,y,-3);
+                }
+            }
+
+        if (right){
+            if (get_ship_status_at_x_y(x+1,y)=0){
+                do set_ship_status_at_x_y(x+1,y,-3);
+                }
+            }
+
+        if (up&right){
+            if (get_ship_status_at_x_y(x+1,y-1)=0){
+                do set_ship_status_at_x_y(x+1,y-1,-3);
+                }
+            }
+
+        if (up&left){
+            if (get_ship_status_at_x_y(x-1,y-1)=0){
+                do set_ship_status_at_x_y(x-1,y-1,-3);
+                }
+            }
+
+        if (down&left){
+            if (get_ship_status_at_x_y(x-1,y+1)=0){
+                do set_ship_status_at_x_y(x-1,y+1,-3);
+                }
+            }
+
+        if (down&right){
+            if (get_ship_status_at_x_y(x+1,y+1)=0){
+                do set_ship_status_at_x_y(x+1,y+1,-3);
+                }
+            }
+
+        return;
+        }
+
+    method boolean can_place_vessel(int xin,int yin,int direction,int length){
+        var int index, x,y;
+        var boolean can;
+        let index=0;
+        let can=true;
+        let x=xin;
+        let y=yin;
+        // 0 up 1 down 2 left 3 right
+        while(can & (index<length)){
+        let can = (get_ship_status_at_x_y(x,y)=0);
+        if (direction = 0){
+            let y=y-1;
+            if(~(board.valid_half_coordinate(y))){let can = false;}
+            }
+
+        if (direction = 1){
+            let y=y+1;
+            if(~(board.valid_half_coordinate(y))){let can = false;}
+            }
+
+        if (direction = 2){
+            let x=x-1;
+            if(~(board.valid_half_coordinate(x))){let can = false;}
+            }
+
+        if (direction = 3){
+            let x=x+1;
+            if(~(board.valid_half_coordinate(x))){let can = false;}
+            }
+        let index=index+1;
+        }
+    return can;
+    }
+
+    function boolean valid_half_coordinate(int x_or_y){
+        var boolean result;
+        let result = (x_or_y>-1)&(x_or_y<11);
+        return result;
+        }
+
+    method void plot_board(){
+        var int x,y;
+        let x=0;
+        while (x<10){
+            let y=0;
+            while (y<10){
+                do draw_bord_at_location(x,y);
+                let y=y+1;
+                }
+            let x=x+1;
+            }
+        do plot_frame();
+        return;
+        }
+
+	function void draw_unknown(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;do Memory.poke(memAddress + 0, 224);
+		do Memory.poke(memAddress + 32, 496);
+		do Memory.poke(memAddress + 64, 1016);
+		do Memory.poke(memAddress + 96, 1816);
+		do Memory.poke(memAddress + 128, 1544);
+		do Memory.poke(memAddress + 160, 1536);
+		do Memory.poke(memAddress + 192, 1536);
+		do Memory.poke(memAddress + 224, 1536);
+		do Memory.poke(memAddress + 256, 1920);
+		do Memory.poke(memAddress + 288, 960);
+		do Memory.poke(memAddress + 320, 192);
+		do Memory.poke(memAddress + 352, 192);
+		do Memory.poke(memAddress + 384, 0);
+		do Memory.poke(memAddress + 416, 192);
+		do Memory.poke(memAddress + 448, 192);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+    
+    function void draw_x(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, -16381);
+		do Memory.poke(memAddress + 32, -8185);
+		do Memory.poke(memAddress + 64, 28686);
+		do Memory.poke(memAddress + 96, 14364);
+		do Memory.poke(memAddress + 128, 7224);
+		do Memory.poke(memAddress + 160, 3696);
+		do Memory.poke(memAddress + 192, 2016);
+		do Memory.poke(memAddress + 224, 960);
+		do Memory.poke(memAddress + 256, 960);
+		do Memory.poke(memAddress + 288, 2016);
+		do Memory.poke(memAddress + 320, 3696);
+		do Memory.poke(memAddress + 352, 7224);
+		do Memory.poke(memAddress + 384, 14364);
+		do Memory.poke(memAddress + 416, 28686);
+		do Memory.poke(memAddress + 448, -8185);
+		do Memory.poke(memAddress + 480, -16381);
+		return;
+	}
+    
+	function void draw_empty(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, -1);
+		do Memory.poke(memAddress + 32, -32767);
+		do Memory.poke(memAddress + 64, -32767);
+		do Memory.poke(memAddress + 96, -32767);
+		do Memory.poke(memAddress + 128, -32767);
+		do Memory.poke(memAddress + 160, -32767);
+		do Memory.poke(memAddress + 192, -32767);
+		do Memory.poke(memAddress + 224, -32767);
+		do Memory.poke(memAddress + 256, -32767);
+		do Memory.poke(memAddress + 288, -32767);
+		do Memory.poke(memAddress + 320, -32767);
+		do Memory.poke(memAddress + 352, -32767);
+		do Memory.poke(memAddress + 384, -32767);
+		do Memory.poke(memAddress + 416, -32767);
+		do Memory.poke(memAddress + 448, -32767);
+		do Memory.poke(memAddress + 480, -1);
+		return;
+	}
+
+    function void draw_hit(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, -4081);
+		do Memory.poke(memAddress + 32, -8185);
+		do Memory.poke(memAddress + 64, -14365);
+		do Memory.poke(memAddress + 96, -28687);
+		do Memory.poke(memAddress + 128, 8184);
+		do Memory.poke(memAddress + 160, 16380);
+		do Memory.poke(memAddress + 192, 16380);
+		do Memory.poke(memAddress + 224, 16380);
+		do Memory.poke(memAddress + 256, 16380);
+		do Memory.poke(memAddress + 288, 16380);
+		do Memory.poke(memAddress + 320, 16380);
+		do Memory.poke(memAddress + 352, 8184);
+		do Memory.poke(memAddress + 384, -28687);
+		do Memory.poke(memAddress + 416, -14365);
+		do Memory.poke(memAddress + 448, -8185);
+		do Memory.poke(memAddress + 480, -4081);
+		return;
+	}
+
+    function void draw_empty_shot(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 4080);
+		do Memory.poke(memAddress + 32, 8184);
+		do Memory.poke(memAddress + 64, 14364);
+		do Memory.poke(memAddress + 96, 28686);
+		do Memory.poke(memAddress + 128, -8185);
+		do Memory.poke(memAddress + 160, -16381);
+		do Memory.poke(memAddress + 192, -16381);
+		do Memory.poke(memAddress + 224, -16381);
+		do Memory.poke(memAddress + 256, -16381);
+		do Memory.poke(memAddress + 288, -16381);
+		do Memory.poke(memAddress + 320, -16381);
+		do Memory.poke(memAddress + 352, -8185);
+		do Memory.poke(memAddress + 384, 28686);
+		do Memory.poke(memAddress + 416, 14364);
+		do Memory.poke(memAddress + 448, 8184);
+		do Memory.poke(memAddress + 480, 4080);
+		return;
+	}
+
+	function void draw_full(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, -1);
+		do Memory.poke(memAddress + 32, -1);
+		do Memory.poke(memAddress + 64, -1);
+		do Memory.poke(memAddress + 96, -1);
+		do Memory.poke(memAddress + 128, -1);
+		do Memory.poke(memAddress + 160, -1);
+		do Memory.poke(memAddress + 192, -1);
+		do Memory.poke(memAddress + 224, -1);
+		do Memory.poke(memAddress + 256, -1);
+		do Memory.poke(memAddress + 288, -1);
+		do Memory.poke(memAddress + 320, -1);
+		do Memory.poke(memAddress + 352, -1);
+		do Memory.poke(memAddress + 384, -1);
+		do Memory.poke(memAddress + 416, -1);
+		do Memory.poke(memAddress + 448, -1);
+		do Memory.poke(memAddress + 480, -1);
+		return;
+	}
+
+	function void draw_0(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 2016);
+		do Memory.poke(memAddress + 32, 4080);
+		do Memory.poke(memAddress + 64, 8184);
+		do Memory.poke(memAddress + 96, 14364);
+		do Memory.poke(memAddress + 128, 12300);
+		do Memory.poke(memAddress + 160, 28686);
+		do Memory.poke(memAddress + 192, 28686);
+		do Memory.poke(memAddress + 224, 28686);
+		do Memory.poke(memAddress + 256, 28686);
+		do Memory.poke(memAddress + 288, 28686);
+		do Memory.poke(memAddress + 320, 28686);
+		do Memory.poke(memAddress + 352, 12300);
+		do Memory.poke(memAddress + 384, 14364);
+		do Memory.poke(memAddress + 416, 8184);
+		do Memory.poke(memAddress + 448, 4080);
+		do Memory.poke(memAddress + 480, 2016);
+		return;
+	}
+
+    function void draw_1(int location) {
+        var int memAddress;
+        let memAddress = 16384 + location;
+        do Memory.poke(memAddress + 0, 0);
+        do Memory.poke(memAddress + 32, 384);
+        do Memory.poke(memAddress + 64, 448);
+        do Memory.poke(memAddress + 96, 480);
+        do Memory.poke(memAddress + 128, 384);
+        do Memory.poke(memAddress + 160, 384);
+        do Memory.poke(memAddress + 192, 384);
+        do Memory.poke(memAddress + 224, 384);
+        do Memory.poke(memAddress + 256, 384);
+        do Memory.poke(memAddress + 288, 384);
+        do Memory.poke(memAddress + 320, 384);
+        do Memory.poke(memAddress + 352, 384);
+        do Memory.poke(memAddress + 384, 384);
+        do Memory.poke(memAddress + 416, 992);
+        do Memory.poke(memAddress + 448, 992);
+        do Memory.poke(memAddress + 480, 0);
+        return;
+    }
+
+    function void draw_2(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 0);
+		do Memory.poke(memAddress + 32, 2016);
+		do Memory.poke(memAddress + 64, 4080);
+		do Memory.poke(memAddress + 96, 7224);
+		do Memory.poke(memAddress + 128, 14364);
+		do Memory.poke(memAddress + 160, 14348);
+		do Memory.poke(memAddress + 192, 14336);
+		do Memory.poke(memAddress + 224, 7168);
+		do Memory.poke(memAddress + 256, 3584);
+		do Memory.poke(memAddress + 288, 1792);
+		do Memory.poke(memAddress + 320, 960);
+		do Memory.poke(memAddress + 352, 448);
+		do Memory.poke(memAddress + 384, 224);
+		do Memory.poke(memAddress + 416, 16380);
+		do Memory.poke(memAddress + 448, 16380);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+
+		function void draw_3(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 0);
+		do Memory.poke(memAddress + 32, 2016);
+		do Memory.poke(memAddress + 64, 4064);
+		do Memory.poke(memAddress + 96, 7168);
+		do Memory.poke(memAddress + 128, 14336);
+		do Memory.poke(memAddress + 160, 14336);
+		do Memory.poke(memAddress + 192, 6144);
+		do Memory.poke(memAddress + 224, 4064);
+		do Memory.poke(memAddress + 256, 4064);
+		do Memory.poke(memAddress + 288, 8160);
+		do Memory.poke(memAddress + 320, 6144);
+		do Memory.poke(memAddress + 352, 14336);
+		do Memory.poke(memAddress + 384, 14336);
+		do Memory.poke(memAddress + 416, 7168);
+		do Memory.poke(memAddress + 448, 8160);
+		do Memory.poke(memAddress + 480, 2016);
+		return;
+	}
+
+	function void draw_4(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 0);
+		do Memory.poke(memAddress + 32, 3072);
+		do Memory.poke(memAddress + 64, 3584);
+		do Memory.poke(memAddress + 96, 3840);
+		do Memory.poke(memAddress + 128, 3456);
+		do Memory.poke(memAddress + 160, 3264);
+		do Memory.poke(memAddress + 192, 3168);
+		do Memory.poke(memAddress + 224, 3184);
+		do Memory.poke(memAddress + 256, 3120);
+		do Memory.poke(memAddress + 288, 16376);
+		do Memory.poke(memAddress + 320, 16376);
+		do Memory.poke(memAddress + 352, 3072);
+		do Memory.poke(memAddress + 384, 3072);
+		do Memory.poke(memAddress + 416, 3072);
+		do Memory.poke(memAddress + 448, 16320);
+		do Memory.poke(memAddress + 480, 16320);
+		return;
+	}
+
+	function void draw_5(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 8184);
+		do Memory.poke(memAddress + 32, 8184);
+		do Memory.poke(memAddress + 64, 24);
+		do Memory.poke(memAddress + 96, 120);
+		do Memory.poke(memAddress + 128, 504);
+		do Memory.poke(memAddress + 160, 896);
+		do Memory.poke(memAddress + 192, 1536);
+		do Memory.poke(memAddress + 224, 3072);
+		do Memory.poke(memAddress + 256, 6144);
+		do Memory.poke(memAddress + 288, 6144);
+		do Memory.poke(memAddress + 320, 3072);
+		do Memory.poke(memAddress + 352, 1536);
+		do Memory.poke(memAddress + 384, 1800);
+		do Memory.poke(memAddress + 416, 1016);
+		do Memory.poke(memAddress + 448, 240);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+
+	function void draw_6(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 240);
+		do Memory.poke(memAddress + 32, 248);
+		do Memory.poke(memAddress + 64, 28);
+		do Memory.poke(memAddress + 96, 12);
+		do Memory.poke(memAddress + 128, 12);
+		do Memory.poke(memAddress + 160, 12);
+		do Memory.poke(memAddress + 192, 12);
+		do Memory.poke(memAddress + 224, 1020);
+		do Memory.poke(memAddress + 256, 1020);
+		do Memory.poke(memAddress + 288, 780);
+		do Memory.poke(memAddress + 320, 780);
+		do Memory.poke(memAddress + 352, 780);
+		do Memory.poke(memAddress + 384, 780);
+		do Memory.poke(memAddress + 416, 1020);
+		do Memory.poke(memAddress + 448, 1020);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+
+    function void draw_7(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 0);
+		do Memory.poke(memAddress + 32, 16380);
+		do Memory.poke(memAddress + 64, 16380);
+		do Memory.poke(memAddress + 96, 12288);
+		do Memory.poke(memAddress + 128, 14336);
+		do Memory.poke(memAddress + 160, 7168);
+		do Memory.poke(memAddress + 192, 3584);
+		do Memory.poke(memAddress + 224, 1792);
+		do Memory.poke(memAddress + 256, 896);
+		do Memory.poke(memAddress + 288, 448);
+		do Memory.poke(memAddress + 320, 224);
+		do Memory.poke(memAddress + 352, 112);
+		do Memory.poke(memAddress + 384, 56);
+		do Memory.poke(memAddress + 416, 24);
+		do Memory.poke(memAddress + 448, 0);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+
+	function void draw_8(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 8184);
+		do Memory.poke(memAddress + 32, 8184);
+		do Memory.poke(memAddress + 64, 6168);
+		do Memory.poke(memAddress + 96, 6168);
+		do Memory.poke(memAddress + 128, 6168);
+		do Memory.poke(memAddress + 160, 6168);
+		do Memory.poke(memAddress + 192, 8184);
+		do Memory.poke(memAddress + 224, 8184);
+		do Memory.poke(memAddress + 256, 8184);
+		do Memory.poke(memAddress + 288, 6168);
+		do Memory.poke(memAddress + 320, 6168);
+		do Memory.poke(memAddress + 352, 6168);
+		do Memory.poke(memAddress + 384, 6168);
+		do Memory.poke(memAddress + 416, 8184);
+		do Memory.poke(memAddress + 448, 8184);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+
+	function void draw_9(int location) {
+		var int memAddress;
+		let memAddress = 16384 + location;
+		do Memory.poke(memAddress + 0, 0);
+		do Memory.poke(memAddress + 32, 16320);
+		do Memory.poke(memAddress + 64, 16320);
+		do Memory.poke(memAddress + 96, 12480);
+		do Memory.poke(memAddress + 128, 12480);
+		do Memory.poke(memAddress + 160, 12480);
+		do Memory.poke(memAddress + 192, 12480);
+		do Memory.poke(memAddress + 224, 16320);
+		do Memory.poke(memAddress + 256, 16320);
+		do Memory.poke(memAddress + 288, 12288);
+		do Memory.poke(memAddress + 320, 12288);
+		do Memory.poke(memAddress + 352, 12288);
+		do Memory.poke(memAddress + 384, 12288);
+		do Memory.poke(memAddress + 416, 14336);
+		do Memory.poke(memAddress + 448, 7936);
+		do Memory.poke(memAddress + 480, 3840);
+		return;
+	}
+
+	method void draw_cursor() {
+	    var int memAddress;
+        let memAddress = 16384 + xy_to_draw_location(cursor_x*16,cursor_y*16);
+		do Memory.poke(memAddress + 0, 0);
+		do Memory.poke(memAddress + 32, 8580);
+		do Memory.poke(memAddress + 64, 29070);
+		do Memory.poke(memAddress + 96, 14748);
+		do Memory.poke(memAddress + 128, 7608);
+		do Memory.poke(memAddress + 160, 4080);
+		do Memory.poke(memAddress + 192, 2016);
+		do Memory.poke(memAddress + 224, 32766);
+		do Memory.poke(memAddress + 256, 32766);
+		do Memory.poke(memAddress + 288, 2016);
+		do Memory.poke(memAddress + 320, 4080);
+		do Memory.poke(memAddress + 352, 7608);
+		do Memory.poke(memAddress + 384, 14748);
+		do Memory.poke(memAddress + 416, 29070);
+		do Memory.poke(memAddress + 448, 8580);
+		do Memory.poke(memAddress + 480, 0);
+		return;
+	}
+
+    method int xy_to_draw_location(int x,int y) {
+    var int top_left;
+    let top_left = (32*(base_y+y))+((base_x+x)/16);
+    return top_left;
+    }
+
+    method void plot_frame() {
+        var int location;
+        let location = xy_to_draw_location(0*16,-17);
+        do board.draw_0(location);
+        let location = xy_to_draw_location(1*16,-17);
+        do board.draw_1(location);
+        let location = xy_to_draw_location(2*16,-17);
+        do board.draw_2(location);
+        let location = xy_to_draw_location(3*16,-17);
+        do board.draw_3(location);
+        let location = xy_to_draw_location(4*16,-17);
+        do board.draw_4(location);
+        let location = xy_to_draw_location(5*16,-17);
+        do board.draw_5(location);
+        let location = xy_to_draw_location(6*16,-17);
+        do board.draw_6(location);
+        let location = xy_to_draw_location(7*16,-17);
+        do board.draw_7(location);
+        let location = xy_to_draw_location(8*16,-17);
+        do board.draw_8(location);
+        let location = xy_to_draw_location(9*16,-17);
+        do board.draw_9(location);
+
+        let location = xy_to_draw_location(-17,0*16);
+        do board.draw_0(location);
+        let location = xy_to_draw_location(-17,1*16);
+        do board.draw_1(location);
+        let location = xy_to_draw_location(-17,2*16);
+        do board.draw_2(location);
+        let location = xy_to_draw_location(-17,3*16);
+        do board.draw_3(location);
+        let location = xy_to_draw_location(-17,4*16);
+        do board.draw_4(location);
+        let location = xy_to_draw_location(-17,5*16);
+        do board.draw_5(location);
+        let location = xy_to_draw_location(-17,6*16);
+        do board.draw_6(location);
+        let location = xy_to_draw_location(-17,7*16);
+        do board.draw_7(location);
+        let location = xy_to_draw_location(-17,8*16);
+        do board.draw_8(location);
+        let location = xy_to_draw_location(-17,9*16);
+        do board.draw_9(location);
+
+
+        return;
+        }
+
+}
+

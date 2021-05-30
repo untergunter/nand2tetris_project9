@@ -1,0 +1,15 @@
+class calc {
+
+    field int c;
+   /** Constructs a new square with a given location and size. */
+   constructor calc new(int ci) {
+      let c = ci;
+      return this;
+   }
+
+   method int add (int x) {
+   var int result;
+   let result = x + c;
+   return result;
+   }
+}
